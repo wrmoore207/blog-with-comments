@@ -2,9 +2,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 
 // Import functions that handle fetching, creating, and deleting comments
-import fetchComment from "../../lib/fetchComment";  // Retrieves comments from Redis
-import createComments from "../../lib/createComment";  // Stores new comments in Redis
-import deleteComments from "../../lib/deleteComment";  // Removes comments from Redis
+import {query} from "../../lib/db";
+import getUser from "../../lib/getUser";
+import fetchComment from "../../lib/fetchComment";
+import createComment from "../../lib/createComment";
+import deleteComment from "../../lib/deleteComment";
 
 /**
  * 
@@ -22,9 +24,9 @@ export default async function handler(
     case "GET":
       return fetchComment(req, res); // Fetch all comments for a given post
     case "POST":
-      return createComments(req, res); // Create a new comment
+      return createComment(req, res); // Create a new comment
     case "DELETE":
-      return deleteComments(req, res); // Delete a comment
+      return deleteComment(req, res); // Delete a comment
     default:
       return res.status(400).json({ message: "Invalid method." }); // Handle unsupported methods
   }
