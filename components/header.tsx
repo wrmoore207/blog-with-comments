@@ -16,6 +16,7 @@ export default function Header() {
           {/* Next.js Link component for navigation (preloads pages for better performance) */}
           <Link href="/">About</Link> 
           <Link href="/posts">Posts</Link>
+          <Link href="/schedule">Schedule</Link> {/* New Schedule Page Link */}
         </nav>
       </Container>
     </header>
