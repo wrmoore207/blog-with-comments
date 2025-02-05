@@ -16,14 +16,10 @@ export default function SchedulePage() {
       .catch((err) => console.error("Error fetching events:", err));
   }, []);
 
-  // Handle adding events
-  const handleEventAdd = async (eventInfo: any) => {
-    const newEvent = {
-      title: eventInfo.event.title,
-      start: eventInfo.event.startStr,
-    };
+  // Function to handle event creation
+  const handleEventAdd = async (title: string, start: string, end: string) => {
+    const newEvent = { title, start, end };
 
-    // Save event to database
     try {
       const res = await fetch("/api/events", {
         method: "POST",
@@ -31,28 +27,48 @@ export default function SchedulePage() {
         headers: { "Content-Type": "application/json" },
       });
 
-      if (!res.ok) throw new Error("Failed to create event.");
-      const savedEvent = await res.json();
-      setEvents([...events, savedEvent]);
+      const result = await res.json(); // Parse the response
+
+      if (!res.ok) {
+        console.error("Error details:", result); // Log backend error
+        throw new Error("Failed to create event.");
+      }
+
+      setEvents([...events, result]); // Update UI
     } catch (err) {
-      console.error("Error saving event:", err);
+      console.error("Error saving event:", err.message);
     }
+  };
+
+  // Handle date selection
+  const handleDateClick = (info: any) => {
+    const title = prompt("Enter event title:");
+    if (!title) return;
+
+    const startTime = prompt("Enter start time (HH:MM, 24-hour format):");
+    const endTime = prompt("Enter end time (HH:MM, 24-hour format):");
+
+    if (!startTime || !endTime) {
+      alert("Start and end times are required.");
+      return;
+    }
+
+    // Format the event start and end time as ISO strings
+    const startDateTime = `${info.dateStr}T${startTime}:00`;
+    const endDateTime = `${info.dateStr}T${endTime}:00`;
+
+    handleEventAdd(title, startDateTime, endDateTime);
   };
 
   return (
     <Container>
       <h1 className="text-4xl font-bold mb-4">Schedule</h1>
       <FullCalendar
-        plugins={[dayGridPlugin, interactionPlugin]}
+        plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
         initialView="dayGridMonth"
         selectable={true}
         events={events}
-        dateClick={(info) => {
-          const title = prompt("Enter event title:");
-          if (title) {
-            handleEventAdd({ event: { title, startStr: info.dateStr } });
-          }
-        }}
+        dateClick={handleDateClick}
       />
     </Container>
   );

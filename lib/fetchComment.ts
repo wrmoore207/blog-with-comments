@@ -6,28 +6,19 @@ export default async function fetchComments(
   res: NextApiResponse
 ) {
   try {
-    const { referer } = req.headers;
-    if (!referer) return res.status(400).json({ message: "Missing referer." });
-
-    const comments = await query(
-      "SELECT id, text, url, user_name, user_picture, user_sub, created_at FROM comments WHERE url = $1 ORDER BY created_at DESC",
-      [referer]
+    const events = await query(
+      "SELECT id, title, start, end FROM events ORDER BY start ASC"
     );
 
-    // Ensure `created_at` is a valid Date object
-    const formattedComments = comments.map((comment) => ({
-      ...comment,
-      created_at: comment.created_at ? new Date(comment.created_at).toISOString() : null,
-      user: {
-        name: comment.user_name || "Anonymous",
-        picture: comment.user_picture || null,
-        sub: comment.user_sub || null,
-      },
+    const formattedEvents = events.map((event) => ({
+      ...event,
+      start: new Date(event.start).toISOString(),
+      end: new Date(event.end).toISOString(),
     }));
 
-    return res.status(200).json(formattedComments);
+    return res.status(200).json(formattedEvents);
   } catch (error) {
-    console.error("Error fetching comments:", error);
+    console.error("Error fetching events:", error);
     return res.status(500).json({ message: "Unexpected error occurred." });
   }
 }
