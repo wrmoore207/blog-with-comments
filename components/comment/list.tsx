@@ -10,12 +10,14 @@ type CommentListProps = {
 export default function CommentList({ comments, onDelete }: CommentListProps) {
   const { user } = useAuth0();
 
-  console.log("Rendering comments:", comments);
+  console.log("Rendering all comments:", comments); // Log full comments array
 
   return (
     <div className="space-y-6 mt-10">
       {comments &&
         comments.map((comment) => {
+          console.log("Rendering comment:", comment); // Log each individual comment
+
           if (!comment.user) return null;
 
           const isAuthor = user && user.sub === comment.user.sub;
@@ -45,9 +47,10 @@ export default function CommentList({ comments, onDelete }: CommentListProps) {
                   <b>{comment.user.name || "Anonymous"}</b>
                   <time className="text-gray-400">
                     {comment.created_at
-                      ? distanceToNow(new Date(comment.created_at))
-                      : "Unknown time"}
+                    ? distanceToNow(new Date(comment.created_at)) // Ensure it's treated as a Date
+                    : "Unknown time"}
                   </time>
+
 
                   {(isAdmin || isAuthor) && (
                     <button

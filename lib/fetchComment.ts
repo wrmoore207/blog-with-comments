@@ -9,27 +9,25 @@ export default async function fetchComment(
   const url = clearUrl(req.headers.referer);
   console.log(`Fetching comments for URL: ${url}`);
 
-  if (!url) {
-    return res.status(400).json({ message: "Missing referer." });
-  }
-
   try {
     const rawComments = await query(
-      "SELECT * FROM comments WHERE url = $1 ORDER BY created_at DESC",
+      `SELECT id, text, url, created_at FROM comments WHERE url = $1 ORDER BY created_at DESC`,
       [url]
     );
 
-    console.log("Fetched comments:", rawComments);
+    console.log("Raw comments from DB:", rawComments);
 
     const comments = rawComments.map((c) => ({
       ...c,
-      created_at: new Date(c.created_at).toISOString(),
+      created_at: new Date(c.created_at).toISOString(), // Ensure proper format
       user: {
         name: c.user_name,
         picture: c.user_picture,
         sub: c.user_sub,
       },
     }));
+
+    console.log("Formatted comments for frontend:", comments);
 
     return res.status(200).json(comments);
   } catch (error) {
