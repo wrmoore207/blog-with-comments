@@ -116,7 +116,6 @@ export default function SchedulePage() {
             events={events}
             dateClick={(info) => openModal(info.dateStr)}
             height="auto"
-            className="w-full text-xs sm:text-sm md:text-base lg:text-lg"
           />
         </div>
       </div>

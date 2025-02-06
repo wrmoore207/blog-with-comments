@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "esnext",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -12,8 +16,10 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve",
-    "incremental": true
+    "jsx": "preserve", // Ensures compatibility with React 18+
+    "incremental": true,
+    "allowSyntheticDefaultImports": true, // Allows using `import FullCalendar from "@fullcalendar/react"`
+    "strictNullChecks": false // (Prevents nullable type errors)
   },
   "include": [
     "next-env.d.ts",
@@ -23,5 +29,7 @@
     "tailwind.config.js",
     "postcss.config.js"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }
