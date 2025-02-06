@@ -19,16 +19,10 @@ export default async function handler(
 async function getEvents(req: NextApiRequest, res: NextApiResponse) {
   try {
     const events = await query(
-      `SELECT id, title, start, "end" FROM events ORDER BY start ASC`
+      `SELECT id, title, start, "end", description FROM events ORDER BY start ASC`
     );
 
-    return res.status(200).json(
-      events.map((event) => ({
-        ...event,
-        start: new Date(event.start).toISOString(),
-        end: new Date(event.end).toISOString(), // Ensure correct format
-      }))
-    );
+    return res.status(200).json(events);
   } catch (error) {
     return res.status(500).json({ message: "Error fetching events." });
   }
@@ -37,21 +31,18 @@ async function getEvents(req: NextApiRequest, res: NextApiResponse) {
 // Create a new event
 async function createEvent(req: NextApiRequest, res: NextApiResponse) {
   try {
-    const { title, start, end } = req.body;
+    const { title, start, end, description } = req.body;
 
-    // Ensure all parameters are provided
     if (!title || !start || !end) {
-      console.error("Missing parameters:", { title, start, end });
       return res.status(400).json({ message: "Missing parameters." });
     }
 
-    // Insert event into PostgreSQL (use "end" with double quotes)
     const result = await query(
-      `INSERT INTO events (title, start, "end") VALUES ($1, $2, $3) RETURNING *`,
-      [title, start, end]
+      `INSERT INTO events (title, start, "end", description) VALUES ($1, $2, $3, $4) RETURNING *`,
+      [title, start, end, description]
     );
 
-    return res.status(201).json(result[0]); // Respond with the created event
+    return res.status(201).json(result[0]);
   } catch (error) {
     console.error("Error creating event:", error);
     return res.status(500).json({ message: "Error creating event." });
